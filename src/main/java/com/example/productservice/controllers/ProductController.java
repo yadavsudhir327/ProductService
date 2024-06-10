@@ -26,14 +26,16 @@ public class ProductController {
     }
     @PostMapping
     public  Product CreateProduct( @RequestBody Product product){
-        return new Product();
+         return productService.addProduct(product);
     }
+
     @PatchMapping("/{id}")
-    public  Product UpdateProduct( @RequestBody Product product,@RequestBody long id){
-        return new Product();
+    public  Product UpdateProduct( @RequestBody Product product,@PathVariable long id){
+        return productService.updateProduct(product,id);
     }
     @DeleteMapping("/{id}")
     public  boolean DeleteProduct( @PathVariable("id")long id){
-        return true;
+
+        return productService.deleteProduct(id);
     }
 }

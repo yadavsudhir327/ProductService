@@ -14,13 +14,14 @@ public class FakeProductService implements ProductService {
     private final  RestTemplate restTemplate;
 
     public FakeProductService(RestTemplate restTemplate) {
+
         this.restTemplate = restTemplate;
     }
 
     @Override
     public Product getProductById(long id) {
        FakeStoreProductDto dto= restTemplate.getForObject("https://fakestoreapi.com/products/" + id, FakeStoreProductDto.class);
-      return dto!=null?dto.convertDtotoProduct(dto):null;
+      return dto!=null?Product.convertDtoToProduct(dto):null;
     }
 
     @Override
@@ -28,23 +29,36 @@ public class FakeProductService implements ProductService {
         FakeStoreProductDto []dtos=restTemplate.getForObject("https://fakestoreapi.com/products", FakeStoreProductDto[].class);
         List<Product>products=new ArrayList<>();
         for(FakeStoreProductDto dto:dtos){
-            products.add(dto.convertDtotoProduct(dto));
+            products.add(Product.convertDtoToProduct(dto));
         }
         return products;
     }
 
-    @Override
-    public Product addProduct(Product product) {
-        return null;
-    }
 
     @Override
-    public Product updateProduct(Product product) {
-        return null;
+    public Product addProduct(Product product) {
+        FakeStoreProductDto fakeStoreProductDto = FakeStoreProductDto.convertProductToDto(product);
+        fakeStoreProductDto =
+                restTemplate
+                        .postForObject("https://fakestoreapi.com/products/", fakeStoreProductDto, FakeStoreProductDto.class);
+        return Product.convertDtoToProduct(fakeStoreProductDto);
+    }
+    @Override
+    public Product updateProduct(Product product,long id) {
+        FakeStoreProductDto fakeStoreProductDto= FakeStoreProductDto.convertProductToDto(product);
+        fakeStoreProductDto=restTemplate.patchForObject("https://fakestoreapi.com/products/"+id,fakeStoreProductDto, FakeStoreProductDto.class);
+        return Product.convertDtoToProduct(fakeStoreProductDto);
+
     }
 
     @Override
     public boolean deleteProduct(long id) {
-        return false;
+        try{
+            restTemplate.delete("https://fakestoreapi.com/products/"+id);
+        }
+        catch(Exception ex){
+            return false;
+        }
+        return true;
     }
 }
