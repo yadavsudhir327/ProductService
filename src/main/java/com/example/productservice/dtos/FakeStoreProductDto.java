@@ -17,14 +17,16 @@ public class FakeStoreProductDto {
         private String description;
         private String image;
 
-        public Product convertDtotoProduct(FakeStoreProductDto dto){
-                Product product = new Product();
-                product.setId(dto.getId());
-                product.setTitle(dto.getTitle());
-                product.setPrice(dto.getPrice());
-                product.setDescription(dto.getDescription());
-               // product.setCategory(dto.getCategory());
-                // Assuming you don't need to convert the image field as it's not present in Product class
-                return product;
+        public static FakeStoreProductDto convertProductToDto(Product product) {
+                FakeStoreProductDto dto = new FakeStoreProductDto();
+                dto.setId(product.getId());
+                dto.setTitle(product.getTitle());
+                dto.setPrice(product.getPrice());
+                dto.setDescription(product.getDescription());
+                if (product.getCategory() != null) {
+                        dto.setCategory(product.getCategory().getTitle());
+                }
+                // Set other fields as needed
+                return dto;
         }
-    }
+}
